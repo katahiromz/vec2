@@ -27,14 +27,14 @@
 /****************************************************************************/
 /* Do you wanna status return? */
 
-#ifdef VEC2_WANT_STATUS_RETURN
-    #define VEC2_STATUS_INIT(ret,value)  vec2_bool ret = (value)
-    #define VEC2_STATUS_SET(ret,value)   ret = (value)
-    #define VEC2_STATUS_RETRUN(ret)      return ret
-#else
+#ifdef VEC2_QUICK_BUT_RISKY
     #define VEC2_STATUS_INIT(ret,value)  /* empty */
     #define VEC2_STATUS_SET(ret,value)   /* empty */
     #define VEC2_STATUS_RETRUN(ret)      /* empty */
+#else
+    #define VEC2_STATUS_INIT(ret,value)  vec2_bool ret = (value)
+    #define VEC2_STATUS_SET(ret,value)   ret = (value)
+    #define VEC2_STATUS_RETRUN(ret)      return ret
 #endif
 
 /****************************************************************************/
@@ -112,10 +112,10 @@ vec2_bool vec2_resize(PVEC2 pv, size_t count, const void *pitem)
 
     assert(vec2_valid(pv));
 
-#ifdef VEC2_WANT_STATUS_RETURN
-    if (vec2_reserve(pv, count))
-#else
+#ifdef VEC2_QUICK_BUT_RISKY
     vec2_reserve(pv, count);
+#else
+    if (vec2_reserve(pv, count))
 #endif
     {
         if ((pitem != NULL) && (count > old_num_items))
@@ -343,10 +343,10 @@ vec2_bool vec2_insert(PVEC2 pv, size_t index0, size_t count, const void *pitem)
     assert(vec2_valid(pv));
     assert(index0 <= vec2_size(pv));
 
-#ifdef VEC2_WANT_STATUS_RETURN
-    if (vec2_reserve(pv, pv->num_items + count))
-#else
+#ifdef VEC2_QUICK_BUT_RISKY
     vec2_reserve(pv, pv->num_items + count);
+#else
+    if (vec2_reserve(pv, pv->num_items + count))
 #endif
     {
         ptr = (char *)pv->items;
@@ -377,10 +377,10 @@ vec2_bool vec2_insert_sub(PVEC2 pv, size_t index0, const VEC2 *psubvec)
     assert(vec2_valid(psubvec));
     assert(index0 <= vec2_size(pv));
 
-#ifdef VEC2_WANT_STATUS_RETURN
-    if (vec2_reserve(pv, pv->num_items + count))
-#else
+#ifdef VEC2_QUICK_BUT_RISKY
     vec2_reserve(pv, pv->num_items + count);
+#else
+    if (vec2_reserve(pv, pv->num_items + count))
 #endif
     {
         ptr = (char *)pv->items;
@@ -458,10 +458,10 @@ vec2_bool vec2_push_back(PVEC2 pv, const void *pitem)
 
     assert(vec2_valid(pv));
 
-#ifdef VEC2_WANT_STATUS_RETURN
-    if (vec2_reserve(pv, pv->num_items + 1U))
-#else
+#ifdef VEC2_QUICK_BUT_RISKY
     vec2_reserve(pv, pv->num_items + 1U);
+#else
+    if (vec2_reserve(pv, pv->num_items + 1U))
 #endif
     {
         ptr = (char *)pv->items;

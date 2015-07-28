@@ -33,12 +33,12 @@ typedef int (*VEC2_ITEM_COMPARE_FN)(const void *pitem1, const void *pitem2);
 /****************************************************************************/
 /* Do you wanna status return? */
 
-#ifdef VEC2_WANT_STATUS_RETURN
-    /* safer but slow */
-    typedef bool vec2_bool;
-#else
+#ifdef VEC2_QUICK_BUT_RISKY
     /* speedy but dangerous */
     typedef void vec2_bool;
+#else
+    /* safer but slow */
+    typedef bool vec2_bool;
 #endif
 
 /****************************************************************************/
