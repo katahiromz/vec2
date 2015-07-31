@@ -76,6 +76,26 @@ bool vec2_valid(const VEC2 *pv)
 /****************************************************************************/
 /* functions */
 
+#ifndef NDEBUG
+    void *vec2_item(PVEC2 pv, size_t index0)
+    {
+        char *p;
+        assert(vec2_valid(pv));
+        assert(index0 <= vec2_size(pv));
+        p = (char *)pv->items;
+        return (void *)(p + index0 * pv->size_per_item);
+    } /* vec2_item */
+
+    const void *vec2_const_item(const VEC2 *pv, size_t index0)
+    {
+        const char *p;
+        assert(vec2_valid(pv));
+        assert(index0 <= vec2_size(pv));
+        p = (const char *)pv->items;
+        return (const void *)(p + index0 * pv->size_per_item);
+    } /* vec2_const_item */
+#endif  /* ndef NDEBUG */
+
 vec2_bool vec2_construct(PVEC2 pv, size_t size_per_item,
                          size_t capacity, void *items)
 {

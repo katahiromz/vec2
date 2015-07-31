@@ -107,6 +107,11 @@ void vec2_swap(PVEC2 pv1, PVEC2 pv2);
 /* validation for debugging */
 bool vec2_valid(const VEC2 *pv);
 
+#ifndef NDEBUG
+    void *vec2_item(PVEC2 pv, size_t index0);
+    const void *vec2_const_item(const VEC2 *pv, size_t index0);
+#endif
+
 /****************************************************************************/
 /* function macros */
 
@@ -117,11 +122,13 @@ bool vec2_valid(const VEC2 *pv);
 #define vec2_capacity(pv)          (*(const size_t *)&(pv)->capacity)
 #define vec2_size_per_item(pv)     ((pv)->size_per_item)
 
-#define vec2_item(pv,index0) ( \
-    (void *)( \
-        ((char *)(pv)->items) + (index0) * (pv)->size_per_item \
-    ) \
-)
+#ifdef NDEBUG
+    #define vec2_item(pv,index0) ( \
+        (void *)( \
+            ((char *)(pv)->items) + (index0) * (pv)->size_per_item \
+        ) \
+    )
+#endif
 
 #define vec2_front(pv)             ((pv)->items)
 #define vec2_back(pv)              vec2_item((pv), vec2_size(pv) - 1)
@@ -130,11 +137,15 @@ bool vec2_valid(const VEC2 *pv);
  * read-only accesses
  */
 #define vec2_const_data(pv)        ((const void *)(pv)->items)
-#define vec2_const_item(pv,index0) ( \
-    (const void *)( \
-        ((const char *)(pv)->items) + (index0) * (pv)->size_per_item \
-    ) \
-)
+
+#ifdef NDEBUG
+    #define vec2_const_item(pv,index0) ( \
+        (const void *)( \
+            ((const char *)(pv)->items) + (index0) * (pv)->size_per_item \
+        ) \
+    )
+#endif
+
 #define vec2_const_front(pv)       ((const void *)(pv)->items)
 #define vec2_const_back(pv)        vec2_const_item((pv), vec2_size(pv) - 1)
 
