@@ -59,9 +59,9 @@ vec2_bool vec2_construct(PVEC2 pv, size_t size_per_item,
 void vec2_destroy(PVEC2 pv);
 void vec2_clear(PVEC2 pv);
 
-/* NOTE: You cannot use vec2_new(). Because vec2 uses fixed block. */
+/* NOTE: You cannot use vec2_new(). */
 #define vec2_new(spi)   ERROR_You_cannot_use_vec2_new_You_lose
-/* NOTE: You cannot use vec2_delete(). Because vec2 uses fixed block. */
+/* NOTE: You cannot use vec2_delete(). */
 #define vec2_delete(pv) ERROR_You_cannot_use_vec2_delete_You_lose
 
 void *vec2_get_at(PVEC2 pv, size_t index0);
@@ -69,11 +69,12 @@ void vec2_set_at(PVEC2 pv, size_t index0, const void *pitem);
 
 vec2_bool vec2_copy(PVEC2 dest, const VEC2 *src);
 
-/* NOTE: You cannot use vec2_assign(). Because vec2 uses fixed block. */
-#define vec2_assign     ERROR_You_cannot_use_vec2_assign_You_lose
+vec2_bool vec2_assign(PVEC2 pv, size_t count, const void *pitem,
+                      size_t size_per_item);
 
 vec2_bool vec2_resize(PVEC2 pv, size_t count, const void *pitem);
 vec2_bool vec2_reserve(PVEC2 pv, size_t capacity);
+vec2_bool vec2_reserve_2(PVEC2 pv, size_t capacity, size_t size_per_item);
 void vec2_shrink_to_fit(PVEC2 pv);
 
 void vec2_foreach(PVEC2 pv, VEC2_FOREACH_FN fn);

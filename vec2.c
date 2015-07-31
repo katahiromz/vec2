@@ -30,11 +30,11 @@
 #ifdef VEC2_QUICK_BUT_RISKY
     #define VEC2_STATUS_INIT(ret,value)  /* empty */
     #define VEC2_STATUS_SET(ret,value)   /* empty */
-    #define VEC2_STATUS_RETRUN(ret)      /* empty */
+    #define VEC2_STATUS_RETURN(ret)      /* empty */
 #else
     #define VEC2_STATUS_INIT(ret,value)  vec2_bool ret = (value)
     #define VEC2_STATUS_SET(ret,value)   ret = (value)
-    #define VEC2_STATUS_RETRUN(ret)      return ret
+    #define VEC2_STATUS_RETURN(ret)      return ret
 #endif
 
 /****************************************************************************/
@@ -88,7 +88,7 @@ vec2_bool vec2_construct(PVEC2 pv, size_t size_per_item,
 
     assert(vec2_valid(pv));
 
-    VEC2_STATUS_RETRUN(ret);
+    VEC2_STATUS_RETURN(ret);
 } /* vec2_construct */
 
 void vec2_destroy(PVEC2 pv)
@@ -118,13 +118,21 @@ vec2_bool vec2_resize(PVEC2 pv, size_t count, const void *pitem)
     if (vec2_reserve(pv, count))
 #endif
     {
-        if ((pitem != NULL) && (count > old_num_items))
+        if (count > old_num_items)
         {
             p = (char *)pv->items;
-            for (i = old_num_items; i < count; ++i)
+            if (pitem != NULL)
             {
-                memcpy(&p[i * pv->size_per_item], pitem,
-                       pv->size_per_item);
+                for (i = old_num_items; i < count; ++i)
+                {
+                    memcpy(&p[i * pv->size_per_item], pitem,
+                           pv->size_per_item);
+                }
+            }
+            else
+            {
+                memset(&p[old_num_items * pv->size_per_item], 0,
+                       (count - old_num_items) * pv->size_per_item);
             }
         }
         pv->num_items = count;
@@ -132,7 +140,7 @@ vec2_bool vec2_resize(PVEC2 pv, size_t count, const void *pitem)
     }
 
     assert(vec2_valid(pv));
-    VEC2_STATUS_RETRUN(ret);
+    VEC2_STATUS_RETURN(ret);
 } /* vec2_resize */
 
 vec2_bool vec2_copy(PVEC2 dest, const VEC2 *src)
@@ -143,23 +151,61 @@ vec2_bool vec2_copy(PVEC2 dest, const VEC2 *src)
     assert(vec2_valid(src));
     assert(dest->size_per_item == src->size_per_item);
 
-    if ((dest != src) && (dest->items != src->items))
+    if (dest != src)
     {
-        if (dest->size_per_item == src->size_per_item)
+        assert(dest->items != src->items);
+
+#ifdef VEC2_QUICK_BUT_RISKY
+        vec2_reserve_2(dest, src->num_items, src->size_per_item);
+#else
+        ret = vec2_reserve_2(dest, src->num_items, src->size_per_item);
+        if (ret)
+#endif
         {
-            if (dest->capacity >= src->num_items)
-            {
-                memcpy(dest->items, src->items,
-                       src->num_items * dest->size_per_item);
-                dest->num_items = src->num_items;
-                VEC2_STATUS_SET(ret, true);
-            }
+            memcpy(dest->items, src->items,
+                   src->num_items * dest->size_per_item);
+            dest->num_items = src->num_items;
         }
     }
 
     assert(vec2_valid(dest));
-    VEC2_STATUS_RETRUN(ret);
+    VEC2_STATUS_RETURN(ret);
 } /* vec2_copy */
+
+vec2_bool vec2_assign(PVEC2 pv, size_t count, const void *pitem,
+                      size_t size_per_item)
+{
+    size_t i;
+    char *ptr;
+    VEC2_STATUS_INIT(ret, false);
+
+    assert(vec2_valid(pv));
+
+#ifdef VEC2_QUICK_BUT_RISKY
+    vec2_reserve_2(pv, count, size_per_item);
+#else
+    if (vec2_reserve_2(pv, count, size_per_item))
+#endif
+    {
+        if (pitem != NULL)
+        {
+            ptr = (char *)pv->items;
+            for (i = 0; i < count; ++i)
+            {
+                memcpy(&ptr[i * size_per_item], pitem, size_per_item);
+            }
+        }
+        else
+        {
+            memset(pv->items, 0, size_per_item * count);
+        }
+        pv->num_items = count;
+        VEC2_STATUS_SET(ret, true);
+    }
+
+    assert(vec2_valid(pv));
+    VEC2_STATUS_RETURN(ret);
+} /* vec2_assign */
 
 void *vec2_get_at(PVEC2 pv, size_t index0)
 {
@@ -325,8 +371,34 @@ vec2_bool vec2_reserve(PVEC2 pv, size_t capacity)
     }
 
     assert(vec2_valid(pv));
-    VEC2_STATUS_RETRUN(ret);
+    VEC2_STATUS_RETURN(ret);
 } /* vec2_reserve */
+
+vec2_bool vec2_reserve_2(PVEC2 pv, size_t capacity, size_t size_per_item)
+{
+    size_t new_size;
+    VEC2_STATUS_INIT(ret, true);
+
+    assert(vec2_valid(pv));
+
+    new_size = capacity * size_per_item;
+    if (new_size > pv->capacity * pv->size_per_item)
+    {
+        VEC2_STATUS_SET(ret, false);
+        /* status bad */
+        vec2_status_bad(pv);
+    }
+    else
+    {
+        pv->num_items *= pv->size_per_item;
+        pv->num_items /= size_per_item;
+        pv->capacity = capacity;
+        pv->size_per_item = size_per_item;
+    }
+
+    assert(vec2_valid(pv));
+    VEC2_STATUS_RETURN(ret);
+} /* vec2_reserve_2 */
 
 void vec2_shrink_to_fit(PVEC2 pv)
 {
@@ -364,7 +436,7 @@ vec2_bool vec2_insert(PVEC2 pv, size_t index0, size_t count, const void *pitem)
     }
 
     assert(vec2_valid(pv));
-    VEC2_STATUS_RETRUN(ret);
+    VEC2_STATUS_RETURN(ret);
 } /* vec2_insert */
 
 vec2_bool vec2_insert_sub(PVEC2 pv, size_t index0, const VEC2 *psubvec)
@@ -396,7 +468,7 @@ vec2_bool vec2_insert_sub(PVEC2 pv, size_t index0, const VEC2 *psubvec)
     }
 
     assert(vec2_valid(pv));
-    VEC2_STATUS_RETRUN(ret);
+    VEC2_STATUS_RETURN(ret);
 } /* vec2_insert_sub */
 
 vec2_bool vec2_erase(PVEC2 pv, size_t index0)
@@ -420,7 +492,7 @@ vec2_bool vec2_erase(PVEC2 pv, size_t index0)
     }
 
     assert(vec2_valid(pv));
-    VEC2_STATUS_RETRUN(ret);
+    VEC2_STATUS_RETURN(ret);
 } /* vec2_erase */
 
 vec2_bool vec2_erase_range(PVEC2 pv, size_t index0, size_t count)
@@ -448,7 +520,7 @@ vec2_bool vec2_erase_range(PVEC2 pv, size_t index0, size_t count)
     }
 
     assert(vec2_valid(pv));
-    VEC2_STATUS_RETRUN(ret);
+    VEC2_STATUS_RETURN(ret);
 } /* vec2_erase_range */
 
 vec2_bool vec2_push_back(PVEC2 pv, const void *pitem)
@@ -457,6 +529,7 @@ vec2_bool vec2_push_back(PVEC2 pv, const void *pitem)
     VEC2_STATUS_INIT(ret, false);
 
     assert(vec2_valid(pv));
+    assert(pitem);
 
 #ifdef VEC2_QUICK_BUT_RISKY
     vec2_reserve(pv, pv->num_items + 1U);
@@ -474,7 +547,7 @@ vec2_bool vec2_push_back(PVEC2 pv, const void *pitem)
     }
 
     assert(vec2_valid(pv));
-    VEC2_STATUS_RETRUN(ret);
+    VEC2_STATUS_RETURN(ret);
 } /* vec2_push_back */
 
 vec2_bool vec2_pop_back(PVEC2 pv)
@@ -487,7 +560,7 @@ vec2_bool vec2_pop_back(PVEC2 pv)
         VEC2_STATUS_SET(ret, true);
     }
     assert(vec2_valid(pv));
-    VEC2_STATUS_RETRUN(ret);
+    VEC2_STATUS_RETURN(ret);
 } /* vec2_pop_back */
 
 void vec2_swap(PVEC2 pv1, PVEC2 pv2)
