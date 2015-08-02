@@ -209,4 +209,33 @@ VEC2_INLINE void vec2_swap(PVEC2 pv1, PVEC2 pv2)
     assert(vec2_valid(pv2));
 } /* vec2_swap */
 
+VEC2_INLINE vec2_bool vec2_copy(PVEC2 dest, const VEC2 *src)
+{
+    VEC2_STATUS_INIT(ret, false);
+
+    assert(vec2_valid(dest));
+    assert(vec2_valid(src));
+    assert(dest->size_per_item == src->size_per_item);
+
+    if (dest != src)
+    {
+        assert(dest->items != src->items);
+
+#ifdef VEC2_QUICK_BUT_RISKY
+        vec2_reserve_2(dest, src->num_items, src->size_per_item);
+#else
+        ret = vec2_reserve_2(dest, src->num_items, src->size_per_item);
+        if (ret)
+#endif
+        {
+            memcpy(dest->items, src->items,
+                   src->num_items * dest->size_per_item);
+            dest->num_items = src->num_items;
+        }
+    }
+
+    assert(vec2_valid(dest));
+    VEC2_STATUS_RETURN(ret);
+} /* vec2_copy */
+
 /****************************************************************************/

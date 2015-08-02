@@ -92,35 +92,6 @@ vec2_bool vec2_resize(PVEC2 pv, size_t count, const void *pitem)
     VEC2_STATUS_RETURN(ret);
 } /* vec2_resize */
 
-vec2_bool vec2_copy(PVEC2 dest, const VEC2 *src)
-{
-    VEC2_STATUS_INIT(ret, false);
-
-    assert(vec2_valid(dest));
-    assert(vec2_valid(src));
-    assert(dest->size_per_item == src->size_per_item);
-
-    if (dest != src)
-    {
-        assert(dest->items != src->items);
-
-#ifdef VEC2_QUICK_BUT_RISKY
-        vec2_reserve_2(dest, src->num_items, src->size_per_item);
-#else
-        ret = vec2_reserve_2(dest, src->num_items, src->size_per_item);
-        if (ret)
-#endif
-        {
-            memcpy(dest->items, src->items,
-                   src->num_items * dest->size_per_item);
-            dest->num_items = src->num_items;
-        }
-    }
-
-    assert(vec2_valid(dest));
-    VEC2_STATUS_RETURN(ret);
-} /* vec2_copy */
-
 vec2_bool vec2_assign(PVEC2 pv, size_t count, const void *pitem,
                       size_t size_per_item)
 {
