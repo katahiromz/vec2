@@ -169,7 +169,11 @@ bool vec2_valid(const VEC2 *pv);
 /****************************************************************************/
 /* inline functions */
 
-#ifndef VEC2_NO_INLINING
+#ifdef VEC2_NO_INLINING
+    #ifdef VEC2_ENABLE_INLINING
+        #error It's a logical error. You lose.
+    #endif
+#else  /* ndef VEC_NO_INLINING */
     #if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L)
         /* NOTE: C11 can use inline functions */
         #ifndef VEC2_ENABLE_INLINING
