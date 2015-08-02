@@ -154,8 +154,12 @@ vec2_bool vec2_resize(PVEC2 pv, size_t count, const void *pitem)
             }
             else
             {
+#ifdef VEC2_NO_ZERO_INIT
+                ;
+#else
                 memset(&p[old_num_items * pv->size_per_item], 0,
                        (count - old_num_items) * pv->size_per_item);
+#endif
             }
         }
         pv->num_items = count;
@@ -220,7 +224,11 @@ vec2_bool vec2_assign(PVEC2 pv, size_t count, const void *pitem,
         }
         else
         {
+#ifdef VEC2_NO_ZERO_INIT
+            ;
+#else
             memset(pv->items, 0, size_per_item * count);
+#endif
         }
         pv->num_items = count;
         VEC2_STATUS_SET(ret, true);
