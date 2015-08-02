@@ -103,7 +103,7 @@ vec2_bool vec2_construct(PVEC2 pv, size_t size_per_item,
     VEC2_STATUS_INIT(ret, true);
     assert(items != NULL);
 
-    /* NOTE: vec2 doesn't allocate memory. Just weakly refered. */
+    /* NOTE: vec2 doesn't allocate memory. Just weakly refers. */
     pv->items = items;
     pv->size_per_item = size_per_item;
     pv->num_items = num_items;
