@@ -6,9 +6,13 @@
 #define KATAHIROMZ_VEC2_H    2  /* Version 2 */
 
 #ifdef __cplusplus
-    #include <cstddef>
+    #include <cstdlib>
+    #include <cstring>
+    #include <cassert>
 #else
-    #include <stddef.h>     /* for size_t */
+    #include <stdlib.h>
+    #include <string.h>
+    #include <assert.h>
     #include <stdbool.h>    /* for bool, false, true */
 #endif
 
@@ -36,9 +40,15 @@ typedef int (*VEC2_ITEM_COMPARE_FN)(const void *pitem1, const void *pitem2);
 #ifdef VEC2_QUICK_BUT_RISKY
     /* speedy but dangerous */
     typedef void vec2_bool;
+    #define VEC2_STATUS_INIT(ret,value)  /* empty */
+    #define VEC2_STATUS_SET(ret,value)   /* empty */
+    #define VEC2_STATUS_RETURN(ret)      /* empty */
 #else
     /* safer but slow */
     typedef bool vec2_bool;
+    #define VEC2_STATUS_INIT(ret,value)  vec2_bool ret = (value)
+    #define VEC2_STATUS_SET(ret,value)   ret = (value)
+    #define VEC2_STATUS_RETURN(ret)      return ret
 #endif
 
 /****************************************************************************/
@@ -60,9 +70,9 @@ void vec2_destroy(PVEC2 pv);
 void vec2_clear(PVEC2 pv);
 
 /* NOTE: You cannot use vec2_new(). */
-#define vec2_new(spi)   ERROR_You_cannot_use_vec2_new_You_lose
+#define vec2_new(spi)       ERROR_You_cannot_use_vec2_new_You_lose
 /* NOTE: You cannot use vec2_delete(). */
-#define vec2_delete(pv) ERROR_You_cannot_use_vec2_delete_You_lose
+#define vec2_delete(pv)     ERROR_You_cannot_use_vec2_delete_You_lose
 
 void *vec2_get_at(PVEC2 pv, size_t index0);
 void vec2_set_at(PVEC2 pv, size_t index0, const void *pitem);
@@ -148,6 +158,52 @@ bool vec2_valid(const VEC2 *pv);
 
 #define vec2_const_front(pv)       ((const void *)(pv)->items)
 #define vec2_const_back(pv)        vec2_const_item((pv), vec2_size(pv) - 1)
+
+/****************************************************************************/
+/* status checking */
+
+#ifndef vec2_status_bad
+    #define vec2_status_bad(pv)    assert(0)
+#endif
+
+/****************************************************************************/
+/* inline functions */
+
+#ifndef VEC2_NO_INLINING
+    #if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L)
+        /* NOTE: C11 can use inline functions */
+        #ifndef VEC2_ENABLE_INLINING
+            #define VEC2_ENABLE_INLINING
+        #endif
+    #endif
+
+    #ifdef __GNUC__
+        /* NOTE: modern GNU C can use inline functions */
+        #ifndef VEC2_ENABLE_INLINING
+            #define VEC2_ENABLE_INLINING
+        #endif
+    #endif
+
+    #ifdef _MSC_VER
+        /* NOTE: modern Microsoft C can use inline functions */
+        #ifndef VEC2_ENABLE_INLINING
+            #define VEC2_ENABLE_INLINING
+        #endif
+    #endif
+
+    #ifdef __DMC__
+        /* NOTE: modern Digital Mars C can use inline functions */
+        #ifndef VEC2_ENABLE_INLINING
+            #define VEC2_ENABLE_INLINING
+        #endif
+    #endif
+#endif  /* ndef VEC_NO_INLINING */
+
+#ifdef VEC2_ENABLE_INLINING
+    #undef VEC2_INLINE
+    #define VEC2_INLINE  inline
+    #include "vec2_inl.h"
+#endif
 
 /****************************************************************************/
 /* C/C++ switching */
