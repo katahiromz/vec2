@@ -160,56 +160,6 @@ bool vec2_valid(const VEC2 *pv);
 #define vec2_const_back(pv)        vec2_const_item((pv), vec2_size(pv) - 1)
 
 /****************************************************************************/
-/* status checking */
-
-#ifndef vec2_status_bad
-    #define vec2_status_bad(pv)    assert(0)
-#endif
-
-/****************************************************************************/
-/* inline functions */
-
-#ifdef VEC2_NO_INLINING
-    #ifdef VEC2_ENABLE_INLINING
-        #error It's a logical error. You lose.
-    #endif
-#else  /* ndef VEC_NO_INLINING */
-    #if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L)
-        /* NOTE: C11 can use inline functions */
-        #ifndef VEC2_ENABLE_INLINING
-            #define VEC2_ENABLE_INLINING
-        #endif
-    #endif
-
-    #ifdef __GNUC__
-        /* NOTE: modern GNU C can use inline functions */
-        #ifndef VEC2_ENABLE_INLINING
-            #define VEC2_ENABLE_INLINING
-        #endif
-    #endif
-
-    #ifdef _MSC_VER
-        /* NOTE: modern Microsoft C can use inline functions */
-        #ifndef VEC2_ENABLE_INLINING
-            #define VEC2_ENABLE_INLINING
-        #endif
-    #endif
-
-    #ifdef __DMC__
-        /* NOTE: modern Digital Mars C can use inline functions */
-        #ifndef VEC2_ENABLE_INLINING
-            #define VEC2_ENABLE_INLINING
-        #endif
-    #endif
-#endif  /* ndef VEC_NO_INLINING */
-
-#ifdef VEC2_ENABLE_INLINING
-    #undef VEC2_INLINE
-    #define VEC2_INLINE  inline
-    #include "vec2_inl.h"
-#endif
-
-/****************************************************************************/
 /* C/C++ switching */
 
 #ifdef __cplusplus
