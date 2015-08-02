@@ -4,6 +4,7 @@
 /* [History]                                                                */
 /* 2015.07.28: katahiromz creates v0.                                       */
 /* 2015.07.31: katahiromz creates v1.                                       */
+/* 2015.08.02: katahiromz creates v2.                                       */
 /****************************************************************************/
 
 #ifdef __cplusplus
@@ -97,7 +98,7 @@ bool vec2_valid(const VEC2 *pv)
 #endif  /* ndef NDEBUG */
 
 vec2_bool vec2_construct(PVEC2 pv, size_t size_per_item,
-                         size_t capacity, void *items)
+                         size_t capacity, void *items, size_t num_items)
 {
     VEC2_STATUS_INIT(ret, true);
     assert(items != NULL);
@@ -105,7 +106,7 @@ vec2_bool vec2_construct(PVEC2 pv, size_t size_per_item,
     /* NOTE: vec2 doesn't allocate memory. Just weakly refered. */
     pv->items = items;
     pv->size_per_item = size_per_item;
-    pv->num_items = capacity;
+    pv->num_items = num_items;
     pv->capacity = capacity;
 
     assert(vec2_valid(pv));
@@ -647,10 +648,8 @@ void vec2_swap(PVEC2 pv1, PVEC2 pv2)
         static long items1[100], items2[100];
 
         /* NOTE: You cannot use vec2_init(). Use vec2_construct() instead. */
-        vec2_construct(&vec1, siz, 100, items1);
-        vec2_clear(&vec1);
-        vec2_construct(&vec2, siz, 100, items2);
-        vec2_clear(&vec2);
+        vec2_construct(&vec1, siz, 100, items1, 0);
+        vec2_construct(&vec2, siz, 100, items2, 0);
 
         n = 1;
         vec2_push_back(&vec1, &n);

@@ -3,7 +3,7 @@
 /****************************************************************************/
 
 #ifndef KATAHIROMZ_VEC2_H
-#define KATAHIROMZ_VEC2_H    1  /* Version 1 */
+#define KATAHIROMZ_VEC2_H    2  /* Version 2 */
 
 #ifdef __cplusplus
     #include <cstddef>
@@ -55,7 +55,7 @@ extern "C"
 #define vec2_init(pv,spi)   ERROR_You_cannot_use_vec2_init_You_lose
 
 vec2_bool vec2_construct(PVEC2 pv, size_t size_per_item,
-                         size_t capacity, void *items);
+                         size_t capacity, void *items, size_t num_items);
 void vec2_destroy(PVEC2 pv);
 void vec2_clear(PVEC2 pv);
 
