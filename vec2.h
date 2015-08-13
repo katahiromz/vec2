@@ -3,7 +3,7 @@
 /****************************************************************************/
 
 #ifndef KATAHIROMZ_VEC2_H
-#define KATAHIROMZ_VEC2_H    2  /* Version 2 */
+#define KATAHIROMZ_VEC2_H    3  /* Version 3 */
 
 #ifdef __cplusplus
     #include <cstdlib>
