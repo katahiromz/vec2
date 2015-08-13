@@ -13,7 +13,7 @@
     #include <stdlib.h>
     #include <string.h>
     #include <assert.h>
-    #include <stdbool.h>    /* for bool, false, true */
+    #include "pstdbool.h"
 #endif
 
 /****************************************************************************/
